@@ -27,7 +27,6 @@
 
 ## Problem Specifics
 1. BFS - 
-
         current_level = [0]
         Loop:
             next_level = []

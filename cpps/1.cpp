@@ -51,21 +51,13 @@ public:
     }
 
     // DFS
-    void dfsUtils(int node, vector<bool> &visited) {
-        visited[node] = true;
+    void dfsUtils(int node, vector<char>& visited) {
+        visited[node] = 1;
+        #pragma omp critical
         cout << node << " ";
 
-        for (auto adj_node : adj[node]) {
-            bool should_visit = false;
-
-            #pragma omp critical
-            {
-                if (!visited[adj_node]) {
-                    #pragma omp task
-                    dfsUtils(adj_node, visited);
-                }
-            }
-            if (should_visit) {
+        for (int adj_node : adj[node]) {
+            if (!visited[adj_node]) {
                 #pragma omp task
                 dfsUtils(adj_node, visited);
             }
@@ -73,15 +65,12 @@ public:
     }
 
     void parallelDfs(int start) {
-        vector<bool> visited(V, false);
+        vector<char> visited(V, 0);
         
         #pragma omp parallel
-        {
-            #pragma omp single
-            {
-                dfsUtils(start, visited);
-            }
-        }
+        #pragma omp single
+        dfsUtils(start, visited);
+        
         cout << endl;
     }
 };
